@@ -3,13 +3,17 @@ import { AppModule } from './app.module';
 import RabbitmqServer from './rabbitmq-server';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    logger: ['error', 'warn', 'log']
+  });
+
   await app.listen(3000);
 
   const server = new RabbitmqServer('amqp://admin:admin@rabbitmq:5672');
   await server.start();
   await server.consume('nest', message =>
-    console.log(message.content.toString()),
+    console.log(message?.content?.toString()),
   );
 }
 bootstrap();
